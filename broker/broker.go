@@ -17,7 +17,7 @@ type Broker struct {
 	Lock        sync.RWMutex
 }
 
-func NewBroker() *Broker {
+func New() *Broker {
 	return &Broker{
 		Subscribers: subscribers{},
 		TopicTable:  make(map[string]subscribers),
