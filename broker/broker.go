@@ -8,6 +8,8 @@ import (
 	"github.com/MehdiEidi/pubsub/subscriber"
 )
 
+const BroadcastTopic = "broadcast"
+
 // subscribers maps subscriber IDs to corresponding Subscriber.
 type subscribers map[string]*subscriber.Subscriber
 
@@ -93,14 +95,25 @@ func (b *Broker) Publish(topic string, msg string) {
 	}
 }
 
-func (b *Broker) Broadcast(msg string, topics []string) {
+func (b *Broker) Multicast(msg string, topics []string) {
 	for _, t := range topics {
-		m := message.New(msg, t)
+		m := message.New(t, msg)
 
 		for _, s := range b.TopicTable[t] {
 			go func(s *subscriber.Subscriber, m message.Message) {
 				s.Send(m)
 			}(s, m)
 		}
+	}
+}
+
+func (b *Broker) Broadcast(msg string) {
+	m := message.New(BroadcastTopic, msg)
+
+	for _, s := range b.Subscribers {
+		go func(s *subscriber.Subscriber, m message.Message) {
+			s.Send(m)
+		}(s, m)
+
 	}
 }
