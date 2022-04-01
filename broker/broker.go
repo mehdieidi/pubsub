@@ -48,6 +48,8 @@ func (b *Broker) RemoveSubscriber(s *subscriber.Subscriber) {
 	s.Delete()
 }
 
+// TODO add remove subscriber b.add(s)
+
 func (b *Broker) SubscribersCount(topic string) int {
 	b.Lock.RLock()
 	defer b.Lock.RUnlock()
@@ -77,6 +79,8 @@ func (b *Broker) Unsubscribe(s *subscriber.Subscriber, topic string) {
 
 	log.Printf("[%s] unsubscribed from topic [%s]\n", s.ID, topic)
 }
+
+// TODO change params to get Message instead of topic msg
 
 func (b *Broker) Publish(topic string, msg string) {
 	b.Lock.Lock()
@@ -114,6 +118,5 @@ func (b *Broker) Broadcast(msg string) {
 		go func(s *subscriber.Subscriber, m message.Message) {
 			s.Send(m)
 		}(s, m)
-
 	}
 }
