@@ -1,2 +1,2 @@
 # pubsub
-Pub Sub service implemented in Go.
+One-to-Many pub sub service.
