@@ -34,7 +34,7 @@ func (b *Broker) AddSubscriber() *subscriber.Subscriber {
 }
 
 func (b *Broker) RemoveSubscriber(s *subscriber.Subscriber) {
-	for t := range s.SubscribedTopics {
+	for t := range s.SubscribedTopics.Data {
 		b.Unsubscribe(s, t)
 	}
 

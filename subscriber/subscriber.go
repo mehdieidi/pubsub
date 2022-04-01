@@ -4,6 +4,7 @@ import (
 	"log"
 	"sync"
 
+	"github.com/MehdiEidi/gods/set"
 	"github.com/MehdiEidi/pubsub/message"
 	"github.com/google/uuid"
 )
@@ -11,7 +12,7 @@ import (
 type Subscriber struct {
 	ID               string
 	Messages         chan *message.Message
-	SubscribedTopics map[string]struct{}
+	SubscribedTopics *set.Set
 	Active           bool
 	Lock             sync.RWMutex
 }
@@ -22,7 +23,7 @@ func New() *Subscriber {
 	return &Subscriber{
 		ID:               ID,
 		Messages:         make(chan *message.Message),
-		SubscribedTopics: make(map[string]struct{}),
+		SubscribedTopics: set.New(),
 		Active:           true,
 	}
 }
@@ -30,13 +31,13 @@ func New() *Subscriber {
 func (s *Subscriber) Subscribe(topic string) {
 	s.Lock.Lock()
 	defer s.Lock.Unlock()
-	s.SubscribedTopics[topic] = struct{}{}
+	s.SubscribedTopics.Add(topic)
 }
 
 func (s *Subscriber) Unsubscribe(topic string) {
 	s.Lock.Lock()
 	defer s.Lock.Unlock()
-	delete(s.SubscribedTopics, topic)
+	s.SubscribedTopics.Delete(topic)
 }
 
 func (s *Subscriber) Topics() []string {
@@ -45,7 +46,7 @@ func (s *Subscriber) Topics() []string {
 
 	var topics []string
 
-	for t := range s.SubscribedTopics {
+	for t := range s.SubscribedTopics.Data {
 		topics = append(topics, t)
 	}
 
@@ -58,7 +59,7 @@ func (s *Subscriber) Listen() {
 			select {
 			case msg, ok := <-s.Messages:
 				if ok {
-					log.Printf("[Subscriber %s] received message %s. [topic %s]\n", s.ID, msg.Body, msg.Topic)
+					log.Printf("[%s] received message %s. [topic %s]\n", s.ID, msg.Body, msg.Topic)
 				}
 			}
 		}
