@@ -11,7 +11,7 @@ import (
 
 type Subscriber struct {
 	ID               string
-	Messages         chan *message.Message
+	Messages         chan message.Message
 	SubscribedTopics *set.Set
 	Active           bool
 	Lock             sync.RWMutex
@@ -22,7 +22,7 @@ func New() *Subscriber {
 
 	return &Subscriber{
 		ID:               ID,
-		Messages:         make(chan *message.Message),
+		Messages:         make(chan message.Message),
 		SubscribedTopics: set.New(),
 		Active:           true,
 	}
@@ -66,9 +66,7 @@ func (s *Subscriber) Listen() {
 	}()
 }
 
-func (s *Subscriber) ReceiveMessage(msg *message.Message) {
-	s.Lock.RLock()
-	defer s.Lock.RUnlock()
+func (s *Subscriber) Send(msg message.Message) {
 	s.Messages <- msg
 }
 

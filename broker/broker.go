@@ -8,11 +8,12 @@ import (
 	"github.com/MehdiEidi/pubsub/subscriber"
 )
 
+// subscribers maps subscriber IDs to corresponding Subscriber.
 type subscribers map[string]*subscriber.Subscriber
 
 type Broker struct {
-	Subscribers subscribers
-	TopicTable  map[string]subscribers
+	Subscribers subscribers            // All subscribers.
+	TopicTable  map[string]subscribers // Map topics to the subscribers of that topic.
 	Lock        sync.RWMutex
 }
 
@@ -79,26 +80,26 @@ func (b *Broker) Publish(topic string, msg string) {
 	b.Lock.Lock()
 	defer b.Lock.Unlock()
 
-	for _, s := range b.TopicTable[topic] {
-		m := message.New(topic, msg)
+	m := message.New(topic, msg)
 
+	for _, s := range b.TopicTable[topic] {
 		if !s.Active {
 			continue
 		}
 
-		go func(s *subscriber.Subscriber, m *message.Message) {
-			s.ReceiveMessage(m)
+		go func(s *subscriber.Subscriber, m message.Message) {
+			s.Send(m)
 		}(s, m)
 	}
 }
 
 func (b *Broker) Broadcast(msg string, topics []string) {
 	for _, t := range topics {
-		for _, s := range b.TopicTable[t] {
-			m := message.New(msg, t)
+		m := message.New(msg, t)
 
-			go func(s *subscriber.Subscriber, m *message.Message) {
-				s.ReceiveMessage(m)
+		for _, s := range b.TopicTable[t] {
+			go func(s *subscriber.Subscriber, m message.Message) {
+				s.Send(m)
 			}(s, m)
 		}
 	}

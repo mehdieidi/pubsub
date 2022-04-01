@@ -5,8 +5,8 @@ type Message struct {
 	Body  string
 }
 
-func New(topic string, msg string) *Message {
-	return &Message{
+func New(topic string, msg string) Message {
+	return Message{
 		Topic: topic,
 		Body:  msg,
 	}
