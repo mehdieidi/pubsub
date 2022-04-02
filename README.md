@@ -1,2 +1,2 @@
 # pubsub
-One-to-Many pub sub service.
+Distributed Many-to-Many pub sub service.
