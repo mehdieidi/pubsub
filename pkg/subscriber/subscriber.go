@@ -1,16 +1,20 @@
 package subscriber
 
 import (
+	"bytes"
+	"encoding/json"
 	"log"
+	"net/http"
 	"sync"
 
 	"github.com/MehdiEidi/gods/set"
-	"github.com/MehdiEidi/pubsub/message"
+	"github.com/MehdiEidi/pubsub/pkg/message"
 	"github.com/google/uuid"
 )
 
 type Subscriber struct {
 	ID               string
+	Addr             string
 	Messages         chan message.Message
 	SubscribedTopics *set.Set
 	Active           bool
@@ -67,6 +71,18 @@ func (s *Subscriber) Listen() {
 }
 
 func (s *Subscriber) Send(msg message.Message) {
+	j, err := json.Marshal(msg)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	r, err := http.Post(s.Addr, "application/json", bytes.NewBuffer(j))
+	if err != nil {
+		log.Println(err.Error())
+	}
+	log.Println("sent to client over http", r.Body)
+	r.Body.Close()
+
 	s.Messages <- msg
 }
 

@@ -4,8 +4,8 @@ import (
 	"log"
 	"sync"
 
-	"github.com/MehdiEidi/pubsub/message"
-	"github.com/MehdiEidi/pubsub/subscriber"
+	"github.com/MehdiEidi/pubsub/pkg/message"
+	"github.com/MehdiEidi/pubsub/pkg/subscriber"
 )
 
 const BroadcastTopic = "broadcast"

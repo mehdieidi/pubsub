@@ -1,8 +1,8 @@
 package message
 
 type Message struct {
-	Topic string
-	Body  string
+	Topic string `json:"topic"`
+	Body  string `json:"body"`
 }
 
 func New(topic string, msg string) Message {
