@@ -10,6 +10,10 @@ import (
 	"github.com/MehdiEidi/pubsub/pkg/message"
 )
 
+type subscriberClient struct {
+	Topics []string `json:"topics"`
+	Addr   string   `json:"addr"`
+}
 type Handler struct {
 	Broker *broker.Broker
 }
@@ -26,34 +30,29 @@ func (h *Handler) publishHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("error parsing json"))
 	}
 
+	log.Println("publishing", msg.Topic, msg.Body)
+
 	h.Broker.Publish(msg.Topic, msg.Body)
 }
 
-type subscriber struct {
-	Topics []string `json:"topics"`
-	Addr   string   `json:"addr"`
-}
-
 func (h *Handler) subscribeHandler(w http.ResponseWriter, r *http.Request) {
-	var s subscriber
+	var client subscriberClient
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		w.Write([]byte("error reading body"))
 	}
 
-	if err := json.Unmarshal(body, &s); err != nil {
+	if err := json.Unmarshal(body, &client); err != nil {
 		w.Write([]byte("error parsing json"))
 	}
 
-	s1 := h.Broker.AddSubscriber()
-	s1.Addr = s.Addr
+	s := h.Broker.AddSubscriber()
+	s.Addr = client.Addr
 
-	for _, t := range s.Topics {
-		h.Broker.Subscribe(s1, t)
+	for _, t := range client.Topics {
+		h.Broker.Subscribe(s, t)
 	}
 
-	log.Println("subscriber", s1.ID, "subscribed for", s.Topics)
-
-	w.Write([]byte(s1.ID))
+	w.Write([]byte(s.ID))
 }

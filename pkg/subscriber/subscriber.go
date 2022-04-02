@@ -76,11 +76,14 @@ func (s *Subscriber) Send(msg message.Message) {
 		log.Println(err.Error())
 	}
 
+	log.Println("sending", msg.Body, msg.Topic, "to", s.Addr)
+
 	r, err := http.Post(s.Addr, "application/json", bytes.NewBuffer(j))
 	if err != nil {
 		log.Println(err.Error())
 	}
-	log.Println("sent to client over http", r.Body)
+
+	log.Println("sent to client over http")
 	r.Body.Close()
 
 	s.Messages <- msg

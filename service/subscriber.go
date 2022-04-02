@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 
 	"github.com/MehdiEidi/pubsub/pkg/message"
@@ -13,12 +14,18 @@ import (
 func Listen(addr string) {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/msg", msgHandler).Methods("POST")
+	r.HandleFunc("/", msgHandler).Methods("POST")
 
-	http.ListenAndServe(addr, nil)
+	fmt.Println("listening for messages on", addr)
+
+	if err := http.ListenAndServe(addr, r); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func msgHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("got something")
+
 	var msg message.Message
 
 	body, err := io.ReadAll(r.Body)
