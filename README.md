@@ -5,7 +5,7 @@ The broker is a server which handles the publish and subscribe functionalities.
 
 To start the broker server:
 ```
-cd pubsub/cmd
+$ cd pubsub/cmd
 go run .
 ```
 
