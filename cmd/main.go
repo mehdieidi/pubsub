@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-const BROKER_ADDR = ":8080"
+const BROKER_SERVER_ADDR = ":8080"
 
 func main() {
 	h := handler{broker: broker.New()}
@@ -16,11 +16,11 @@ func main() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/publish", h.publishHandler).Methods("POST")
-	r.HandleFunc("subscriber", h.subscribeHandler).Methods("POST")
+	r.HandleFunc("/subscribe", h.subscribeHandler).Methods("POST")
 
-	log.Printf("Starting broker server on %s", BROKER_ADDR)
+	log.Printf("Starting broker server on [%s]\n", BROKER_SERVER_ADDR)
 
-	if err := http.ListenAndServe(BROKER_ADDR, r); err != nil {
-		log.Fatal("failed to start broker server on", BROKER_ADDR, err)
+	if err := http.ListenAndServe(BROKER_SERVER_ADDR, r); err != nil {
+		log.Fatal("failed to start broker server on", BROKER_SERVER_ADDR, err)
 	}
 }

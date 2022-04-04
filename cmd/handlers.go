@@ -22,11 +22,13 @@ func (h *handler) publishHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("error reading publish request body", err)
 		w.Write([]byte("error reading publish request body"))
+		return
 	}
 
 	if err := json.Unmarshal(body, &msg); err != nil {
 		log.Println("error parsing publish message json body", err)
 		w.Write([]byte("error parsing publish message json body"))
+		return
 	}
 
 	h.broker.Publish(msg)
@@ -39,11 +41,13 @@ func (h *handler) subscribeHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("error reading subscriber request body", err)
 		w.Write([]byte("error reading subscriber request body"))
+		return
 	}
 
 	if err := json.Unmarshal(body, &s); err != nil {
 		log.Println("error parsing subscriber json body", err)
 		w.Write([]byte("error parsing subscriber json body"))
+		return
 	}
 
 	h.broker.AddSubscriber(&s)

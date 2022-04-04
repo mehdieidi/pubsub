@@ -5,14 +5,12 @@ import (
 
 	"github.com/MehdiEidi/pubsub/internal/message"
 	"github.com/MehdiEidi/pubsub/internal/subscriber"
-	"github.com/google/uuid"
 )
 
 func (b *Broker) AddSubscriber(s *subscriber.Subscriber) {
 	b.Mutex.Lock()
 	defer b.Mutex.Unlock()
 
-	s.ID = uuid.NewString()
 	b.Subscribers[s.ID] = s
 
 	log.Printf("subscriber [%s] added\n", s.ID)
@@ -21,9 +19,6 @@ func (b *Broker) AddSubscriber(s *subscriber.Subscriber) {
 }
 
 func (b *Broker) Subscribe(s *subscriber.Subscriber, topics []string) {
-	b.Mutex.Lock()
-	defer b.Mutex.Unlock()
-
 	for _, t := range topics {
 		if b.TopicTable[t] == nil {
 			b.TopicTable[t] = subscriber.Subscribers{}

@@ -7,15 +7,15 @@ import "github.com/google/uuid"
 // clients TCP address which the broker uses to send back messages when available.
 type Subscriber struct {
 	ID               string   `json:"ID"`
-	TCPAddr          string   `json:"addr"`
+	HTTPAddr         string   `json:"addr"`
 	SubscribedTopics []string `json:"subscribed_topics"`
 	Active           bool
 }
 
 // New constructs and returns a new Subscriber.
-func New(TCPAddr string, subscribedTopics []string) *Subscriber {
+func New(HTTPAddr string, subscribedTopics []string) *Subscriber {
 	ID := uuid.NewString()
-	return &Subscriber{ID: ID, TCPAddr: TCPAddr, SubscribedTopics: subscribedTopics, Active: true}
+	return &Subscriber{ID: ID, HTTPAddr: HTTPAddr, SubscribedTopics: subscribedTopics, Active: true}
 }
 
 // Subscribers is a map of the Subscribers IDs to the Subscribers themselves.
