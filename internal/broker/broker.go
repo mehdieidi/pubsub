@@ -5,7 +5,7 @@ package broker
 import (
 	"sync"
 
-	"github.com/MehdiEidi/pubsub/internal/core/domain/subscriber"
+	"github.com/MehdiEidi/pubsub/internal/subscriber"
 )
 
 // Broker is the broker server which is responsible for getting published messages and sending those messages to the

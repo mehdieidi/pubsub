@@ -6,9 +6,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/MehdiEidi/pubsub/internal/core/domain/broker"
-	"github.com/MehdiEidi/pubsub/internal/core/domain/message"
-	"github.com/MehdiEidi/pubsub/internal/core/domain/subscriber"
+	"github.com/MehdiEidi/pubsub/internal/broker"
+	"github.com/MehdiEidi/pubsub/internal/message"
+	"github.com/MehdiEidi/pubsub/internal/subscriber"
 )
 
 type handler struct {

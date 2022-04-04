@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/MehdiEidi/pubsub/internal/core/domain/broker"
+	"github.com/MehdiEidi/pubsub/internal/broker"
 	"github.com/gorilla/mux"
 )
 

@@ -3,8 +3,8 @@ package broker
 import (
 	"log"
 
-	"github.com/MehdiEidi/pubsub/internal/core/domain/message"
-	"github.com/MehdiEidi/pubsub/internal/core/domain/subscriber"
+	"github.com/MehdiEidi/pubsub/internal/message"
+	"github.com/MehdiEidi/pubsub/internal/subscriber"
 	"github.com/google/uuid"
 )
 

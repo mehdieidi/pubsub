@@ -7,7 +7,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/MehdiEidi/pubsub/internal/core/domain/message"
+	"github.com/MehdiEidi/pubsub/internal/message"
 	"github.com/gorilla/mux"
 )
 
