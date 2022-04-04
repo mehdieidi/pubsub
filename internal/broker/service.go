@@ -19,6 +19,7 @@ func (b *Broker) AddSubscriber(s *subscriber.Subscriber) {
 	b.subscribe(s, s.SubscribedTopics)
 }
 
+// subscribe subscribes s for the given topics on the broker.
 func (b *Broker) subscribe(s *subscriber.Subscriber, topics []string) {
 	for _, t := range topics {
 		if b.TopicTable[t] == nil {
