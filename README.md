@@ -21,9 +21,11 @@ s := subscriber.New("http://localhost:8081", []string{"football", "volleyball", 
 j, _ := json.Marshal(s)
 ```
 
-Clients should start listening before introducing themselves to the server. (In a separate goroutine)
+Clients should start listening before introducing themselves to the server. (In a separate goroutine).<br>
+The s.Listen() will populate the msg variable when received data.
 ```
-go s.Listen()
+var msg message.Message
+go s.Listen(&msg)
 ```
 
 Register with the server and subscribe for the defined topics:

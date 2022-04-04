@@ -11,11 +11,19 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// handler implements the handlers of the registered routes. It also contains additional required values so
+// handlers can access.
+type handler struct {
+	msg *message.Message
+}
+
 // Listen starts an http server on the subscribers address and listens for incoming messages.
-func (s *Subscriber) Listen() {
+func (s *Subscriber) Listen(msg *message.Message) {
+	h := handler{msg: msg}
+
 	r := mux.NewRouter()
 
-	r.HandleFunc("/msg", messageReceiveHandler).Methods("POST")
+	r.HandleFunc("/msg", h.messageReceiveHandler).Methods("POST")
 
 	u, err := url.Parse(s.HTTPAddr)
 	if err != nil {
@@ -34,7 +42,7 @@ func (s *Subscriber) Listen() {
 }
 
 // messageReceiveHandler handles the incoming messages to the subscriber.
-func messageReceiveHandler(w http.ResponseWriter, r *http.Request) {
+func (h *handler) messageReceiveHandler(w http.ResponseWriter, r *http.Request) {
 	var msg message.Message
 
 	body, err := io.ReadAll(r.Body)
@@ -51,4 +59,5 @@ func messageReceiveHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("received [%s] %s\n", msg.Topic, msg.Body)
+	*h.msg = msg
 }
