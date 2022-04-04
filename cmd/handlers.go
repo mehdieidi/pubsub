@@ -11,10 +11,13 @@ import (
 	"github.com/MehdiEidi/pubsub/internal/subscriber"
 )
 
+// handler implements the handlers of the registered routes. It also contains additional required values so
+// handlers can access.
 type handler struct {
 	broker *broker.Broker
 }
 
+// publishHandler handles the route registered for publishing messages.
 func (h *handler) publishHandler(w http.ResponseWriter, r *http.Request) {
 	var msg message.Message
 
@@ -24,6 +27,7 @@ func (h *handler) publishHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("error reading publish request body"))
 		return
 	}
+	defer r.Body.Close()
 
 	if err := json.Unmarshal(body, &msg); err != nil {
 		log.Println("error parsing publish message json body", err)
@@ -34,6 +38,7 @@ func (h *handler) publishHandler(w http.ResponseWriter, r *http.Request) {
 	h.broker.Publish(msg)
 }
 
+// subscribeHandler handles the route registered for adding new subscribers.
 func (h *handler) subscribeHandler(w http.ResponseWriter, r *http.Request) {
 	var s subscriber.Subscriber
 
@@ -43,6 +48,7 @@ func (h *handler) subscribeHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("error reading subscriber request body"))
 		return
 	}
+	defer r.Body.Close()
 
 	if err := json.Unmarshal(body, &s); err != nil {
 		log.Println("error parsing subscriber json body", err)

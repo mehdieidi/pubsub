@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	s := subscriber.New("http://localhost:8082", []string{"football", "volleyball", "handball"})
+	s := subscriber.New("http://localhost:8082", []string{"football", "volleyball", "handball"}, true)
 
 	j, err := json.Marshal(s)
 	if err != nil {

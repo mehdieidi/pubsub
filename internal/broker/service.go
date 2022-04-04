@@ -7,6 +7,7 @@ import (
 	"github.com/MehdiEidi/pubsub/internal/subscriber"
 )
 
+// AddSubscriber registers the given subscriber with the broker. It also calls Subscribe method.
 func (b *Broker) AddSubscriber(s *subscriber.Subscriber) {
 	b.Mutex.Lock()
 	defer b.Mutex.Unlock()
@@ -15,10 +16,10 @@ func (b *Broker) AddSubscriber(s *subscriber.Subscriber) {
 
 	log.Printf("subscriber [%s] added\n", s.ID)
 
-	b.Subscribe(s, s.SubscribedTopics)
+	b.subscribe(s, s.SubscribedTopics)
 }
 
-func (b *Broker) Subscribe(s *subscriber.Subscriber, topics []string) {
+func (b *Broker) subscribe(s *subscriber.Subscriber, topics []string) {
 	for _, t := range topics {
 		if b.TopicTable[t] == nil {
 			b.TopicTable[t] = subscriber.Subscribers{}
@@ -30,9 +31,10 @@ func (b *Broker) Subscribe(s *subscriber.Subscriber, topics []string) {
 	}
 }
 
+// Publish sends the msg to all the subscribers which have been registered with the topic of the msg.
 func (b *Broker) Publish(msg message.Message) {
-	b.Mutex.Lock()
-	defer b.Mutex.Unlock()
+	b.Mutex.RLock()
+	defer b.Mutex.RUnlock()
 
 	for _, s := range b.TopicTable[msg.Topic] {
 		if !s.Active {
