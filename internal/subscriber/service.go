@@ -9,7 +9,6 @@ import (
 	"github.com/MehdiEidi/pubsub/internal/message"
 )
 
-// Send sends the msg to the subscriber over HTTP.
 func (s *Subscriber) Send(msg message.Message) {
 	j, err := json.Marshal(msg)
 	if err != nil {

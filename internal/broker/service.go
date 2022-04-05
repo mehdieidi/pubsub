@@ -7,7 +7,6 @@ import (
 	"github.com/MehdiEidi/pubsub/internal/subscriber"
 )
 
-// AddSubscriber registers the given subscriber with the broker. It also calls Subscribe method.
 func (b *Broker) AddSubscriber(s *subscriber.Subscriber) {
 	b.Mutex.Lock()
 	defer b.Mutex.Unlock()
@@ -19,7 +18,20 @@ func (b *Broker) AddSubscriber(s *subscriber.Subscriber) {
 	b.subscribe(s, s.SubscribedTopics)
 }
 
-// subscribe subscribes s for the given topics on the broker.
+func (b *Broker) RemoveSubscriber(ID string) {
+	b.Mutex.Lock()
+	defer b.Mutex.Unlock()
+
+	for topic, subscribers := range b.TopicTable {
+		delete(subscribers, ID)
+		log.Printf("[%s] unsubscribed from topic [%s]\n", ID, topic)
+	}
+
+	delete(b.Subscribers, ID)
+
+	log.Printf("removed [%s]\n", ID)
+}
+
 func (b *Broker) subscribe(s *subscriber.Subscriber, topics []string) {
 	for _, t := range topics {
 		if b.TopicTable[t] == nil {
@@ -32,7 +44,24 @@ func (b *Broker) subscribe(s *subscriber.Subscriber, topics []string) {
 	}
 }
 
-// Publish sends the msg to all the subscribers which have been registered with the topic of the msg.
+func (b *Broker) Subscribe(subscribeMessage message.Subscribe) {
+	b.Mutex.Lock()
+	defer b.Mutex.Unlock()
+
+	subscriber := b.Subscribers[subscribeMessage.ID]
+	b.subscribe(subscriber, subscribeMessage.Topics)
+}
+
+func (b *Broker) Unsubscribe(unsubscribeMessage message.Unsubscribe) {
+	b.Mutex.Lock()
+	defer b.Mutex.Unlock()
+
+	for _, t := range unsubscribeMessage.Topics {
+		delete(b.TopicTable[t], unsubscribeMessage.ID)
+		log.Printf("[%s] unsubscribed from topic [%s]\n", unsubscribeMessage.ID, t)
+	}
+}
+
 func (b *Broker) Publish(msg message.Message) {
 	b.Mutex.RLock()
 	defer b.Mutex.RUnlock()
@@ -48,4 +77,18 @@ func (b *Broker) Publish(msg message.Message) {
 			s.Send(msg)
 		}(s, msg)
 	}
+}
+
+func (b *Broker) Activate(ID string) {
+	b.Mutex.Lock()
+	defer b.Mutex.Unlock()
+
+	b.Subscribers[ID].Active = true
+}
+
+func (b *Broker) Deactivate(ID string) {
+	b.Mutex.Lock()
+	defer b.Mutex.Unlock()
+
+	b.Subscribers[ID].Active = false
 }
